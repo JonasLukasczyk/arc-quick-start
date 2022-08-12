@@ -1,6 +1,6 @@
 <template>
   <div class='dialog'>
-    <h1><img src='assets/dpLogo.svg' style="float:left;height:3em;margin:0.3em -2em 0 0;"/>Arc Quick Start</h1>
+    <!--<h1><img src='assets/dpLogo.svg' style="float:left;height:3em;margin:0.3em -6em 0 0;"/>ARC</h1>-->
     <div class='content'>
       <div v-if="globalState===0" style="padding-top:10em">
         <div v-if="downloadState===0">
@@ -21,6 +21,169 @@
         </div>
       </div>
       <div v-else-if="globalState===1">
+        <div>Welcome!</div>
+        <br/>
+        <div>This tool will help you to setup your first ARC.</div>
+        <br/>
+        <div>Get started by downloading the ARCcommander.</div>
+        <br/>
+        <div>
+          <q-btn label="Download" color="primary" class="q-ml-sm" @click="globalState=2"></q-btn>
+          <div style="color:gray">~100MB</div>
+        </div>
+        <br/>
+      </div>
+      <div v-else-if="globalState===2">
+        <div>
+          Do you plan to share your ARC with the community?
+          <br>
+          <br>
+          <q-form
+            @submit="onSubmit"
+            @reset="onReset"
+            class="q-gutter-md"
+          >
+            <q-input
+              filled
+              v-model="user_gitlab"
+              label="GitLab User Name"
+              lazy-rules
+            ></q-input>
+            <div style='text-align:left;margin-top:0'>
+              <q-btn flat label="Register" size='sm' style="margin:0"></q-btn>
+            </div>
+            <div>
+              <q-btn label="Submit" type="submit" color="primary" @click="globalState=3"></q-btn>
+              <q-btn label="Skip" type="reset" color="primary" flat class="q-ml-sm"></q-btn>
+            </div>
+          </q-form>
+        </div>
+      </div>
+      <div v-else-if="globalState===3">
+        <div>
+          Tell us more about yourself.
+        </div>
+
+        <q-form
+          @submit="onSubmit"
+          @reset="onReset"
+          class="q-gutter-md"
+        >
+          <q-input
+            filled
+            v-model="user_name"
+            label="Name and Surname"
+            lazy-rules
+            :rules="[ val => val && val.length > 0 || 'Please type something']"
+          ></q-input>
+          <q-input
+            filled
+            v-model="user_eMail"
+            label="EMail"
+            lazy-rules
+            :rules="[ val => val && val.length > 0 || 'Please type something']"
+          ></q-input>
+
+          <div>
+            <q-btn label="Submit" type="submit" color="primary" @click="globalState=4"></q-btn>
+            <q-btn label="Skip" type="reset" color="primary" flat class="q-ml-sm"></q-btn>
+          </div>
+
+          <br>
+          <div style='color:gray'>
+            Changes to the ARC are tagged with this information to keep provenance.
+            <!--This information is used for version control of the ARC.-->
+          </div>
+        </q-form>
+      </div>
+      <div v-else-if="globalState===4">
+        <div>
+          Awesome!
+        </div>
+        <div>
+          Now you can start creating your first ARC.
+        </div>
+        <br>
+        <q-form
+          @submit="onSubmit"
+          @reset="onReset"
+          class="q-gutter-md"
+        >
+          <div>
+            <q-input
+              filled
+              v-model="arc_name"
+              label="Name of the ARC"
+              lazy-rules
+              :rules="[ val => val && val.length > 0 || 'Please type something']"
+            ></q-input>
+            <q-btn label="Create ARC" type="submit" color="primary" @click="globalState=5"></q-btn>
+          </div>
+
+          <div>
+            Setting up the ARC
+            <q-circular-progress
+              indeterminate
+              size="1em"
+              :thickness="0.4"
+              color="primary"
+              track-color="grey-3"
+              class="q-ma-md"
+            />
+          </div>
+          <div>
+            Adding Assay
+            <q-circular-progress
+              indeterminate
+              size="1em"
+              :thickness="0.4"
+              color="primary"
+              track-color="grey-3"
+              class="q-ma-md"
+            />
+          </div>
+          <div>
+            Retrieving Access Token
+            <q-circular-progress
+              indeterminate
+              size="1em"
+              :thickness="0.4"
+              color="primary"
+              track-color="grey-3"
+              class="q-ma-md"
+            />
+          </div>
+          <div>
+            Synchronizing ARC
+            <q-circular-progress
+              indeterminate
+              size="1em"
+              :thickness="0.4"
+              color="primary"
+              track-color="grey-3"
+              class="q-ma-md"
+            />
+          </div>
+
+        </q-form>
+      </div>
+      <div v-else-if="globalState===5">
+        <div>
+          Congratulations!
+        </div>
+        <br>
+        <div>
+          You created your first ARC.
+        </div>
+        <br>
+        <div>
+          Now you can start being FAIR by adding further metadata.
+        </div>
+      </div>
+      <!--<div v-else-if="globalState===5">-->
+      <!--  Progress-->
+      <!--</div>-->
+      <div v-else-if="globalState===9999">
         <q-form
           @submit="onSubmit"
           @reset="onReset"
@@ -79,6 +242,8 @@ import { onMounted, ref, reactive } from 'vue';
 
 const downloadState = ref(0)
 const globalState = ref(0)
+
+globalState.value=0;
 
 const downloadProgress = ref(20)
 
