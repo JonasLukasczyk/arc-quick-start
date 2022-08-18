@@ -32,6 +32,10 @@ const sendMsg = msg => {
 
 export const ArcCommanderService = {
 
+  debug: async e=>{
+    return process.env;
+  },
+
   getArcCommanderPath: async e=>{
     let root = process.env.APPIMAGE;
     if(!root){
@@ -197,5 +201,7 @@ export const ArcCommanderService = {
     ipcMain.handle('ACS_openExternalLink', ArcCommanderService.openExternalLink);
     ipcMain.handle('ACS_setConfigEntries', ArcCommanderService.setConfigEntries);
     ipcMain.handle('ACS_runCommand', ArcCommanderService.runCommand);
+
+    ipcMain.handle('ACS_debug', ArcCommanderService.debug);
   }
 };
