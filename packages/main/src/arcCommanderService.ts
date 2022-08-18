@@ -4,6 +4,7 @@ import fs from 'fs';
 import os from 'os';
 import { execSync } from 'child_process';
 import https from 'https';
+const PATH = require('path');
 
 var httpsOptions = {
     host: 'api.github.com',
@@ -33,7 +34,7 @@ export const ArcCommanderService = {
   },
 
   getArcCommanderPath: async e=>{
-    let root = process.env.APPIMAGE;
+    let root = process.env.PORTABLE_EXECUTABLE_DIR;
     if(!root){
       root = app.getAppPath();
     }
@@ -67,8 +68,10 @@ export const ArcCommanderService = {
   checkInitialState: async e=>{
     const path = await ArcCommanderService.getArcCommanderPath();
 
-    if(fs.existsSync(path + '/config.json')){
-      const config_ = fs.readFileSync(path + '/config.json', {encoding:'UTF-8'});
+    const configPath = PATH.join(path,'config.json');
+
+    if(fs.existsSync( configPath )){
+      const config_ = fs.readFileSync(configPath, {encoding:'UTF-8'});
       const config__ = JSON.parse(config_);
       for(const key of Object.keys(config)){
         config[key] = config__[key];
@@ -142,7 +145,7 @@ export const ArcCommanderService = {
   },
 
   downloadArcCommander: async (e) => {
-    const acPath = config.arc_commander.path + '/' + config.arc_commander.filename;
+    const acPath = PATH.join(config.arc_commander.path,config.arc_commander.filename);
     await ArcCommanderService.downloadFile(
       config.arc_commander.url,
       acPath
@@ -166,7 +169,7 @@ export const ArcCommanderService = {
     }
     const path = await ArcCommanderService.getArcCommanderPath();
     fs.writeFileSync(
-      path + '/config.json',
+      PATH.join(path,'config.json'),
       JSON.stringify(config)
     );
 
@@ -179,7 +182,11 @@ export const ArcCommanderService = {
     if(command==='')
       return 2; // skipped
 
-    const acPath = config.arc_commander.path+'/'+config.arc_commander.filename;
+    const acPath = PATH.join(
+      config.arc_commander.path,
+      config.arc_commander.filename
+    );
+
     try{
       const status = execSync(`${acPath} ${command}`, { cwd: config.arc_commander.path }).toString();
       console.log(status);
