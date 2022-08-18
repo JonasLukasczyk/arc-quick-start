@@ -333,9 +333,9 @@ const processArcCommandQueue = queue=>{
     status=>{
       console.log(command,status);
       if(command[1]!==null)
-        command[1].value = status;
+        command[1].value = status[0];
 
-      if(!status)
+      if(!status[0])
         return;
 
       processArcCommandQueue(queue);

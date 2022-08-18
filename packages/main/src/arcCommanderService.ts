@@ -194,13 +194,11 @@ export const ArcCommanderService = {
     );
 
     try{
-      const status = execSync(`${acPath} ${command}`, { cwd: config.arc_commander.path }).toString();
-      console.log(status);
-    } catch (e) {
-      console.error(e);
-      return 0; // error
+      const status = execSync(`${config.arc_commander.filename} ${command}`, { cwd: config.arc_commander.path }).toString();
+      return(1,status);
+    } catch (error) {
+      return(0,error);
     }
-    return 1; // success
   },
 
   init: async () => {
