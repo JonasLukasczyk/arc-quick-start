@@ -324,12 +324,14 @@ const processArcCommandQueue = queue=>{
   if(!queue.length)
     return;
 
+
   const command = queue.shift();
   if(command[1]!==null)
     command[1].value = -1;
+  console.log(command);
   window.ipc.invoke( 'ACS_runCommand', command[0] ).then(
     status=>{
-      console.log(status);
+      console.log(command,status);
       if(command[1]!==null)
         command[1].value = status;
 
@@ -356,8 +358,9 @@ const openExternalLink = url => {
 const downloadArcCommander = ()=>{
   state_download.value = 1;
   window.ipc.invoke('ACS_downloadArcCommander').then(
-    _=>{
+    config_=>{
       state_download.value = 2;
+      config = config_;
       advancePageState();
     }
   );

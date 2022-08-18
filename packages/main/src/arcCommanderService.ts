@@ -161,7 +161,8 @@ export const ArcCommanderService = {
       } catch(e) {
       }
     }
-    return 1;
+    config.arc_commander.exists = true;
+    return config;
   },
 
   openExternalLink: async (e,url) => {
