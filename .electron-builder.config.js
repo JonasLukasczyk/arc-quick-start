@@ -19,7 +19,10 @@ const config = {
   extraMetadata: {
     version: process.env.VITE_APP_VERSION,
   },
-  win: { "target": ["portable"] },
+  win: {
+    "target": ["portable"],
+    artifactName: 'test.exe',
+  },
 };
 
 module.exports = config;
