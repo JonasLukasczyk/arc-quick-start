@@ -24,16 +24,12 @@ const config = {
   user_name:null,
 };
 
-const sendMsg = msg => {
-  const window = BrowserWindow.getAllWindows().find(w => !w.isDestroyed())
-  window.webContents.send('msg', msg);
-}
-
-
 export const ArcCommanderService = {
 
   debug: async e=>{
-    return process.env;
+    // return process.env;
+    return JSON.stringify(process.env);
+    // return 'xxx';
   },
 
   getArcCommanderPath: async e=>{
@@ -60,7 +56,7 @@ export const ArcCommanderService = {
           });
         });
         req.on('error', err => {
-          sendMsg(err);
+          console.error(err);
           resolve(err);
         });
         req.end();
@@ -91,7 +87,7 @@ export const ArcCommanderService = {
         platform = 'linux';
         break;
       default:
-        sendMsg('ERROR: Arc Commander not supported on current platform:', platform);
+        console.error('ERROR: Arc Commander not supported on current platform:', platform);
         return null;
     }
 
@@ -140,7 +136,7 @@ export const ArcCommanderService = {
 
   downloadFile: async (url,path) => {
     return new Promise<void>(resolve => {
-      sendMsg('Downloading '+ url);
+      console.log('Downloading '+ url);
       wget({url: url, dest: path}, ()=>resolve());
     });
   },
@@ -178,7 +174,7 @@ export const ArcCommanderService = {
   },
 
   runCommand: async (e,command) => {
-    sendMsg(command);
+    console.log(command);
 
     if(command==='')
       return 2; // skipped
@@ -186,9 +182,9 @@ export const ArcCommanderService = {
     const acPath = config.arc_commander.path+'/'+config.arc_commander.filename;
     try{
       const status = execSync(`${acPath} ${command}`, { cwd: config.arc_commander.path }).toString();
-      sendMsg(status);
+      console.log(status);
     } catch (e) {
-      sendMsg(e);
+      console.error(e);
       return 0; // error
     }
     return 1; // success

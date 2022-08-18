@@ -409,13 +409,12 @@ onMounted(() => {
     }
   );
 
-  window.ipc.invoke('ACS_debug', data => {
-    console.log(data);
-  } );
-
-  window.ipc.on('msg', msg => {
-    console.log('SERVER:',msg);
-  } );
+  window.ipc.invoke('ACS_debug').then(
+    data => {
+      console.log(data);
+      console.log(JSON.parse(data));
+    }
+  );
 });
 
 </script>
