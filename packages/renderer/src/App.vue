@@ -303,16 +303,16 @@ const createArc = ()=>{
 
       const queue = [];
       if(config.user_gitlab){
-        queue.push([[`-p`,`${config.arc_name}`,`init`,`-r`,`https://git.nfdi4plants.org/${config.user_gitlab}/${config.arc_name}`], null]);
+        queue.push([`-p ${config.arc_name} init -r https://git.nfdi4plants.org/${config.user_gitlab}/${config.arc_name}`, null]);
       }
-      queue.push([[`-p`,`${config.arc_name}`,`i`,`create`,`-i`,`${config.arc_name}`], state_arc]);
-      queue.push([[`-p`,`${config.arc_name}`,`a`,`init`,`-a`,`${config.arc_name}`], state_assay]);
+      queue.push([`-p ${config.arc_name} i create -i ${config.arc_name}`, state_arc]);
+      queue.push([`-p ${config.arc_name} a init -a ${config.arc_name}`, state_assay]);
       if(config.user_name && config.user_eMail){
-        queue.push([[`-p`,`${config.arc_name}`,`config`,`setgituser`,`-l`,`-n`,`${config.user_name}`,`-e`,`${config.user_eMail}`], null]);
+        queue.push([`-p ${config.arc_name} config setgituser -l -n ${config.user_name} -e ${config.user_eMail}`, null]);
       }
       if(config.user_gitlab){
-        queue.push([[`-p`,`${config.arc_name}`,`remote`,`token`,`get`,`-s`,`git.nfdi4plants.org`], state_token]);
-        queue.push([[`-p`,`${config.arc_name}`,`sync`,`-f`], state_sync]);
+        queue.push([`-p ${config.arc_name} remote token get -s git.nfdi4plants.org`, state_token]);
+        queue.push([`-p ${config.arc_name} sync -f`, state_sync]);
       }
 
       processArcCommandQueue(queue);

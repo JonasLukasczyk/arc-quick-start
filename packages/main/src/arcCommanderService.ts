@@ -185,19 +185,16 @@ export const ArcCommanderService = {
   runCommand: async (e,params) => {
     console.log(params);
 
-    if(params==='')
-      return 2; // skipped
-
     const acPath = PATH.join(
       config.arc_commander.path,
       config.arc_commander.filename
     );
 
     try{
-      const status = execSync(config.arc_commander.filename, params, { cwd: config.arc_commander.path }).toString();
-      return(1,status);
+      const status = execSync(acPath+' '+params, { cwd: config.arc_commander.path }).toString();
+      return [1,status];
     } catch (error) {
-      return(0,error);
+      return [0,error];
     }
   },
 
