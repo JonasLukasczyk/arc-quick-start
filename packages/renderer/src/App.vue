@@ -51,7 +51,7 @@
                 class="q-ma-md"
               />
               <div class='note-message'>
-                Downloading Arc Commander ...
+                Downloading ARC Commander ...
               </div>
             </div>
             <div v-else-if='state_download===2'>
@@ -308,7 +308,7 @@ const createArc = ()=>{
       queue.push([`-p ${config.arc_name} i create -i ${config.arc_name}`, state_arc]);
       queue.push([`-p ${config.arc_name} a init -a ${config.arc_name}`, state_assay]);
       if(config.user_name && config.user_eMail){
-        queue.push([`-p ${config.arc_name} config setgituser -l -n '${config.user_name}' -e '${config.user_eMail}'`, null]);
+        queue.push([`-p ${config.arc_name} config setgituser -l -n "${config.user_name}" -e "${config.user_eMail}"`, null]);
       }
       if(config.user_gitlab){
         queue.push([`-p ${config.arc_name} remote token get -s git.nfdi4plants.org`, state_token]);
