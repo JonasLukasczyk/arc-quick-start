@@ -191,7 +191,7 @@ export const ArcCommanderService = {
     );
 
     try{
-      const status = execSync(`"${acPath}" ${params}`, {cwd:acPath}).toString();
+      const status = execSync(`"${acPath}" ${params}`, {cwd:config.arc_commander.path}).toString();
       return [1,status];
     } catch (error) {
       return [0,error];
