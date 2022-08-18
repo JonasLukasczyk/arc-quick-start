@@ -30,7 +30,8 @@ export const ArcCommanderService = {
   debug: async e=>{
     // return process.env;
     // return process.env.PORTABLE_EXECUTABLE_DIR;
-    return JSON.stringify(process.env);
+    // return JSON.stringify(process.env);
+    return app.getPath('exe');
   },
 
   getArcCommanderPath: async e=>{
