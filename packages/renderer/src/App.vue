@@ -169,7 +169,7 @@
 
               <div>
                 <q-btn label="Submit" type="submit" color="primary"></q-btn>
-                <q-btn label="Skip" type="reset" color="primary" flat class="q-ml-sm"></q-btn>
+                <q-btn label="Skip" type="reset" color="primary" flat class="q-ml-sm" @click="advancePageState()"></q-btn>
               </div>
 
               <br>
@@ -301,14 +301,21 @@ const createArc = ()=>{
       state_token.value = -2;
       state_sync.value = -2;
 
-      processArcCommandQueue([
-        [`-p ${config.arc_name} init -r https://git.nfdi4plants.org/${config.user_gitlab}/${config.arc_name}`, null],
-        [`-p ${config.arc_name} i create -i ${config.arc_name}`, state_arc],
-        [`-p ${config.arc_name} a init -a ${config.arc_name}`, state_assay],
-        [`-p ${config.arc_name} remote token get -s git.nfdi4plants.org`, state_token],
-        [`-p ${config.arc_name} config setgituser -l -n ${user_name} -e ${user_eMail}`, null],
-        [`-p ${config.arc_name} sync -f`, state_sync],
-      ]);
+      const queue = [];
+      if(config.user_gitlab){
+        queue.push([`-p ${config.arc_name} init -r https://git.nfdi4plants.org/${config.user_gitlab}/${config.arc_name}`, null]);
+      }
+      queue.push([`-p ${config.arc_name} i create -i ${config.arc_name}`, state_arc]);
+      queue.push([`-p ${config.arc_name} a init -a ${config.arc_name}`, state_assay]);
+      if(config.user_name && config.user_eMail){
+        queue.push([`-p ${config.arc_name} config setgituser -l -n ${config.user_name} -e ${config.user_eMail}`, null]);
+      }
+      if(config.user_gitlab){
+        queue.push([`-p ${config.arc_name} remote token get -s git.nfdi4plants.org`, state_token]);
+        queue.push([`-p ${config.arc_name} sync -f`, state_sync]);
+      }
+
+      processArcCommandQueue(queue);
     }
   );
 };
@@ -382,17 +389,13 @@ const setUserNameAndEMail = () => {
 const advancePageState = ()=>{
   if(!config.arc_commander.exists && state_page.value!='PAGE_WELCOME'){
     state_page.value='PAGE_WELCOME';
-  } else if(!config.user_gitlab && state_page.value!='PAGE_GITLAB') {
+  } else if(!config.user_gitlab && state_page.value!='PAGE_GITLAB' && state_page.value!='PAGE_USER') {
     state_page.value='PAGE_GITLAB';
   } else if(!config.user_name && state_page.value!='PAGE_USER') {
     state_page.value='PAGE_USER';
   } else {
     state_page.value='PAGE_CREATE_ARC';
   }
-  // } else if(!config.arc_name && state_page.value!='PAGE_CREATE_ARC') {
-  //   state_page.value='PAGE_CREATE_ARC';
-  // } else {
-    // state_page.value='PAGE_ARC';
 }
 
 onMounted(() => {

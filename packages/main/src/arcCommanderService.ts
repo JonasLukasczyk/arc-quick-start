@@ -31,10 +31,10 @@ export const ArcCommanderService = {
     // return process.env;
     // return process.env.PORTABLE_EXECUTABLE_DIR;
     // return JSON.stringify(process.env);
-    const temp = process.env['PORTABLE_EXECUTABLE_DIR'];
-    const temp2 = process.env['PORTABLE_EXECUTABLE_DIR']+'';
+    // const temp = process.env['PORTABLE_EXECUTABLE_DIR'];
+    // const temp2 = process.env['PORTABLE_EXECUTABLE_DIR']+'';
     // return app.getPath('exe');
-    return [temp,temp2];
+    return '{}';
   },
 
   getArcCommanderPath: async e=>{
