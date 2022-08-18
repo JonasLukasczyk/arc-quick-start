@@ -415,6 +415,11 @@ onMounted(() => {
       console.log(JSON.parse(data));
     }
   );
+  window.ipc.invoke('ACS_getArcCommanderPath').then(
+    data => {
+      console.log(data);
+    }
+  );
 });
 
 </script>
