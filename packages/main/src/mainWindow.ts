@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow,Menu,shell } from 'electron';
 import path from 'path';
 import { join } from 'path';
 import { URL } from 'url';
@@ -52,6 +52,44 @@ async function createWindow() {
 */
 export async function restoreOrCreateWindow() {
   let window = BrowserWindow.getAllWindows().find(w => !w.isDestroyed());
+
+  const template = [
+    {
+      label: 'Window',
+      submenu: [
+        { role: 'quit' },
+        { role: 'reload' },
+        { role: 'forceReload' },
+        { type: 'separator' },
+        { role: 'toggleDevTools' },
+      ]
+    },
+    {
+      role: 'help',
+      submenu: [
+        {
+          label: 'Tutorials',
+          click: async () => {
+            shell.openExternal('https://github.com/nfdi4plants/Swate/wiki/');
+          }
+        },
+        {
+          label: 'Helpdesk',
+          click: async () => {
+            shell.openExternal('https://helpdesk.nfdi4plants.org');
+          }
+        },
+        {
+          label: 'Knowledge Base',
+          click: async () => {
+            shell.openExternal('https://nfdi4plants.org/nfdi4plants.knowledgebase/index.html');
+          }
+        },
+      ]
+    }
+  ];
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
 
   if (window === undefined) {
     window = await createWindow();

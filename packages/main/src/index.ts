@@ -1,7 +1,6 @@
 import {app} from 'electron';
 import './security-restrictions';
 import {restoreOrCreateWindow} from '/@/mainWindow';
-import {DownloadService} from '/@/downloadService';
 import {ArcCommanderService} from '/@/arcCommanderService';
 
 /**
@@ -39,7 +38,6 @@ app.on('activate', restoreOrCreateWindow);
  * Create app window when background process will be ready
  */
 app.whenReady()
-  .then(DownloadService.init)
   .then(ArcCommanderService.init)
   .then(restoreOrCreateWindow)
   .catch((e) => console.error('Failed create window:', e));

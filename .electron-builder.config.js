@@ -8,6 +8,7 @@ if (process.env.VITE_APP_VERSION === undefined) {
  * @see https://www.electron.build/configuration/configuration
  */
 const config = {
+  asar: true,
   directories: {
     output: 'dist',
     buildResources: 'buildResources',
@@ -18,6 +19,7 @@ const config = {
   extraMetadata: {
     version: process.env.VITE_APP_VERSION,
   },
+  win: { "target": ["portable"] },
 };
 
 module.exports = config;
