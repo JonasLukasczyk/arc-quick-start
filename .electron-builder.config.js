@@ -20,7 +20,7 @@ const config = {
     version: process.env.VITE_APP_VERSION,
   },
   win: {
-    // "target": ["portable"],
+    "target": ["portable"],
     artifactName: 'test.exe',
   },
 };
