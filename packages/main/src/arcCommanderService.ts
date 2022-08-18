@@ -29,7 +29,7 @@ export const ArcCommanderService = {
 
   debug: async e=>{
     // return process.env;
-    return JSON.stringify(process.env);
+    return [process.cwd(),process.execPath];
   },
 
   getArcCommanderPath: async e=>{
