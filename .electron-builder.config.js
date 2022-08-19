@@ -10,6 +10,7 @@ if (process.env.VITE_APP_VERSION === undefined) {
 const config = {
   asar: true,
   directories: {
+    output: 'dist',
     buildResources: 'buildResources',
   },
   files: [
