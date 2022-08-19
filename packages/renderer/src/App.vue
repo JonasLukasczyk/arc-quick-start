@@ -1,6 +1,7 @@
 <template>
   <div class='dialog'>
     <h1><img src='./assets/dpLogo.svg' style="display:inline-block;height:3em;margin:-1.2em -1em -1.2em -1em;"/>ARC Commander Mini</h1>
+    <div class='content_wrapper'>
       <div class='content'>
         <transition name="slide">
           <!-- ############################################################# -->
@@ -63,51 +64,6 @@
           </div>
 
           <!-- ############################################################# -->
-          <!--<div v-if="state_page==='PAGE_WELCOME'">-->
-          <!--  <div class='bold-message' style="margin:1em 0 -1em 0;">-->
-          <!--    Congratulations!-->
-          <!--  </div>-->
-          <!--  <div class='message'>-->
-          <!--    You have just created your first ARC.-->
-          <!--  </div>-->
-          <!--  <div class='message'>-->
-          <!--    Do not hesitate to start adding your data and metadata to FAIRify your research.-->
-          <!--  </div>-->
-          <!--  <div class='message'>-->
-          <!--    The Swate tool provides support in finding standardized terms for metadata annotations. Check out the <span class='link' @click='openExternalLink("https://github.com/nfdi4plants/Swate/wiki/")'>tutorials</span> to learn how to use it.-->
-          <!--  </div>-->
-          <!--  <div class='message'>-->
-          <!--    For further assistance, please consult our <span class='link' @click='openExternalLink("https://nfdi4plants.org/nfdi4plants.knowledgebase/index.html")'>knowledge base</span>, <span class='link' @click='openExternalLink("https://helpdesk.nfdi4plants.org")'>helpdesk</span>, or feel free to contact us directly at <span class='link' @click='openExternalLink("email:info@nfdi4plants.org")'>info@nfdi4plants.org</span>.-->
-          <!--  </div>-->
-          <!--</div>-->
-
-          <!-- ############################################################# -->
-          <!--<div v-if="state_page==='PAGE_WELCOME'">-->
-          <!--  <div>Welcome!</div>-->
-          <!--  <br/>-->
-          <!--  <div>This tool will help you to setup your first ARC.</div>-->
-          <!--  <br/>-->
-          <!--  <div>Get started by downloading the ARCcommander.</div>-->
-          <!--  <br/>-->
-          <!--  <div>-->
-          <!--    <q-btn label="Download" color="primary" class="q-ml-sm" @click="state_download=1"></q-btn>-->
-          <!--    <div style="color:gray">~100MB</div>-->
-          <!--  </div>-->
-          <!--  <br/>-->
-          <!--</div>-->
-          <!--<div v-if="state_page==='PAGE_WELCOME'">-->
-          <!--  <div>Welcome!</div>-->
-          <!--  <br/>-->
-          <!--  <div>This tool will help you to setup your first ARC.</div>-->
-          <!--  <br/>-->
-          <!--  <div>Get started by downloading the ARCcommander.</div>-->
-          <!--  <br/>-->
-          <!--  <div>-->
-          <!--    <q-btn label="Download" color="primary" class="q-ml-sm" @click="state_download=1"></q-btn>-->
-          <!--    <div style="color:gray">~100MB</div>-->
-          <!--  </div>-->
-          <!--  <br/>-->
-          <!--</div>-->
           <div v-else-if="state_page==='PAGE_GITLAB'">
             <br>
             <br>
@@ -127,8 +83,9 @@
                   label="GitLab User Name"
                   lazy-rules
                   :rules="[ val => val && val.length > 0 || '']"
+                  hide-bottom-space
                 ></q-input>
-                <div style='text-align:left;margin-top:-1.0em'>
+                <div style='text-align:left;margin-top:0.4em'>
                   <span class='link' @click='openExternalLink("https://register.nfdi4plants.org/registration")'>Register</span>
                 </div>
                 <br>
@@ -260,9 +217,29 @@
               </div>
             </div>
           </div>
+
+          <!--############################################################# -->
+          <div v-else-if="state_page==='PAGE_HELP'">
+            <div class='bold-message' style="margin:1em 0 -1em 0;">
+              Congratulations!
+            </div>
+            <div class='message'>
+              You have just created your first ARC.
+              <!--TODO LINK TO ARC -->
+            </div>
+            <div class='message'>
+              Do not hesitate to start adding your data and metadata to FAIRify your research.
+            </div>
+            <div class='message'>
+              The Swate tool provides support in finding standardized terms for data annotations. Check out the <span class='link' @click='openExternalLink("https://nfdi4plants.org/nfdi4plants.knowledgebase/docs/tutorials/QuickStart_swate.html")'>tutorials</span> to learn how to use it.
+            </div>
+            <div class='message'>
+              For further assistance, please consult our <span class='link' @click='openExternalLink("https://nfdi4plants.org/nfdi4plants.knowledgebase/index.html")'>knowledge base</span>, <span class='link' @click='openExternalLink("https://helpdesk.nfdi4plants.org")'>helpdesk</span>, or feel free to contact us directly at <span class='link' @click='openExternalLink("email:info@nfdi4plants.org")'>info@nfdi4plants.org</span>.
+            </div>
+          </div>
         </transition>
       </div>
-    <h2></h2>
+    </div>
   </div>
 </template>
 
@@ -321,8 +298,10 @@ const createArc = ()=>{
 };
 
 const processArcCommandQueue = queue=>{
-  if(!queue.length)
+  if(!queue.length){
+    state_page.value='PAGE_HELP';
     return;
+  }
 
   const command = queue.shift();
   if(command[1]!==null)
@@ -332,7 +311,7 @@ const processArcCommandQueue = queue=>{
     status=>{
       console.log(command,status);
       if(command[1]!==null)
-        command[1].value = status[0];
+        command[1].value = status[0] ? 1 : 0;
 
       if(!status[0])
         return;
@@ -402,6 +381,7 @@ const advancePageState = ()=>{
 
 onMounted(() => {
   state_page.value='PAGE_INITIAL';
+  // state_page.value='PAGE_HELP';
 
   state_download.value = 0;
   state_arc.value = 0;
@@ -453,16 +433,16 @@ h1 {
   font-size: 2em !important;
   background-color: #2d3e50;
   color: white;
-  border-top-left-radius: 0.5em;
-  border-top-right-radius: 0.5em;
+  /*border-top-left-radius: 0.5em;*/
+  /*border-top-right-radius: 0.5em;*/
   margin: 0;
 }
 h2 {
   font-size: 2em !important;
   background-color: #2d3e50;
   color: white;
-  border-bottom-left-radius: 0.5em;
-  border-bottom-right-radius: 0.5em;
+  /*border-bottom-left-radius: 0.5em;*/
+  /*border-bottom-right-radius: 0.5em;*/
   margin: 0;
   min-height: 1em;
 }
@@ -474,26 +454,33 @@ h2 {
 }
 
 .dialog {
-  max-width: 25em;
-  min-width: 25em;
   margin:0 auto;
-  margin-top:1em;
   text-align:center;
-  position: relative;
+  position: absolute;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  border-bottom:2em solid #2d3e50;
+  overflow: hidden;
+}
+
+.content_wrapper {
+  max-width: 27em;
+  height: 38em;
+  margin: 0 auto;
 }
 
 .content {
-  border:0.1em solid #2d3e50;
-  padding: 1em 1em;
-  overflow: hidden;
-  height:32em;
+  position: relative;
+  margin: 0 auto;
+  /*border:0.1em solid red;*/
 }
 
 .content > div {
   position: absolute;
-  left:0;
-  right:0;
-  padding: 0 1em;
+  padding: 1em 1em;
+  width: 100%;
 }
 
 .note-message {
@@ -518,7 +505,6 @@ h2 {
 .check {
   font-size: 1.8em;
   color: #47db4d;
-  /*margin-left: 0.5em;*/
 }
 
 .slide-enter-active,

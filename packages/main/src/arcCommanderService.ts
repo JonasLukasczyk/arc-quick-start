@@ -2,7 +2,7 @@ import { ipcMain,app,shell,BrowserWindow } from 'electron';
 const wget = require('node-wget');
 import fs from 'fs';
 import os from 'os';
-import { execSync } from 'child_process';
+import { exec,execSync } from 'child_process';
 import https from 'https';
 const PATH = require('path');
 
@@ -34,12 +34,15 @@ export const ArcCommanderService = {
     // const temp = process.env['PORTABLE_EXECUTABLE_DIR'];
     // const temp2 = process.env['PORTABLE_EXECUTABLE_DIR']+'';
     // return app.getPath('exe');
-    return '{}';
+    return JSON.stringify(process.env);
   },
 
   getArcCommanderPath: async e=>{
     // const root = PATH.resolve("./");
     let root = process.env['PORTABLE_EXECUTABLE_DIR'];
+    if(!root){
+      root = process.env['PWD'];
+    }
     if(!root){
       root = app.getAppPath();
     }
@@ -155,7 +158,7 @@ export const ArcCommanderService = {
       config.arc_commander.url,
       acPath
     );
-    if(os.platform()==='linux'){
+    if(os.platform()!=='win32'){
       try{
         execSync(`chmod +x ${acPath}`, { cwd: config.arc_commander.path });
       } catch(e) {
@@ -182,6 +185,20 @@ export const ArcCommanderService = {
     return config;
   },
 
+  runCommandASync: (command,options) => new Promise((resolve,reject)=>{
+    try {
+      exec(
+        command,
+        options,
+        (error, stdout, stderr) => {
+          resolve([error===null,stdout+'\n'+stderr,error]);
+        }
+      );
+    } catch (error) {
+      resolve([0,error]);
+    }
+  }),
+
   runCommand: async (e,params) => {
     console.log(params);
 
@@ -190,12 +207,12 @@ export const ArcCommanderService = {
       config.arc_commander.filename
     );
 
-    try{
-      const status = execSync(`"${acPath}" ${params}`, {cwd:config.arc_commander.path}).toString();
-      return [1,status];
-    } catch (error) {
-      return [0,error];
-    }
+    const result = await ArcCommanderService.runCommandASync(
+      `"${acPath}" ${params}`,
+      {cwd:config.arc_commander.path}
+    );
+
+    return result;
   },
 
   init: async () => {

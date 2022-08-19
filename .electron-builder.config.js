@@ -23,6 +23,9 @@ const config = {
     "target": ["portable"],
     artifactName: 'test.exe',
   },
+  mac: {
+    "target": ["tar.gz"],
+  },
 };
 
 module.exports = config;

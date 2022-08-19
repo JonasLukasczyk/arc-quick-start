@@ -11,9 +11,8 @@ async function createWindow() {
       webviewTag: false, // The webview tag is not recommended. Consider alternatives like iframe or Electron's BrowserView. https://www.electronjs.org/docs/latest/api/webview-tag#warning
       preload: join(__dirname, '../../preload/dist/index.cjs'),
     },
-    width:700,
-    height:700,
-
+    width:500,
+    height:600,
   });
 
   /**
@@ -25,9 +24,9 @@ async function createWindow() {
   mainWindow.on('ready-to-show', () => {
     mainWindow?.show();
 
-    if (import.meta.env.DEV) {
-      mainWindow?.webContents.openDevTools();
-    }
+    // if (import.meta.env.DEV) {
+    //   mainWindow?.webContents.openDevTools();
+    // }
   });
 
   /**
@@ -70,7 +69,7 @@ export async function restoreOrCreateWindow() {
         {
           label: 'Tutorials',
           click: async () => {
-            shell.openExternal('https://github.com/nfdi4plants/Swate/wiki/');
+            shell.openExternal('https://nfdi4plants.org/nfdi4plants.knowledgebase/docs/tutorials/QuickStart_swate.html');
           }
         },
         {
