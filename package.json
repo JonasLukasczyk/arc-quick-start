@@ -22,10 +22,7 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.13.0",
-    "chokidar": "^3.5.3",
     "electron-updater": "4.6.5",
-    "primeicons": "^5.0.0",
-    "primevue": "^3.12.1",
     "quasar": "^2.5.5",
     "node-wget": "latest",
     "request": "latest",
