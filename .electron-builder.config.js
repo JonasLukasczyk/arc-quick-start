@@ -21,10 +21,9 @@ const config = {
   },
   win: {
     "target": ["portable"],
-    artifactName: 'test.exe',
   },
   mac: {
-    "target": ["tar.gz"],
+    "target": ["dmg"],
   },
 };
 
