@@ -25,6 +25,9 @@ const config = {
   },
   mac: {
     "target": ["dmg"],
+  },
+  linux: {
+    "target": ["AppImage"]
   }
 };
 
