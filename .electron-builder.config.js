@@ -25,7 +25,7 @@ const config = {
   },
   mac: {
     "target": ["dmg"],
-  },
+  }
 };
 
 module.exports = config;
