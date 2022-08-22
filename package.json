@@ -1,6 +1,6 @@
 {
   "name": "arc-quick-start",
-  "version": "v0.0.1",
+  "version": "v0.0.2",
   "private": true,
   "engines": {
     "node": ">=v16.13",
