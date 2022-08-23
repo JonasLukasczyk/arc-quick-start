@@ -17,7 +17,7 @@ const config = {
     'packages/**/dist/**',
   ],
   extraMetadata: {
-    version: process.env.VITE_APP_VERSION,
+    version: 'v0.0.2',
   },
   publish: ["github"],
   win: {
