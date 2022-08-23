@@ -34,7 +34,11 @@ export const ArcCommanderService = {
     // const temp = process.env['PORTABLE_EXECUTABLE_DIR'];
     // const temp2 = process.env['PORTABLE_EXECUTABLE_DIR']+'';
     // return app.getPath('exe');
-    return JSON.stringify(process.env);
+    return [
+      JSON.stringify(process.env),
+      app.getPath('exe'),
+      app.getAppPath()
+    ];
   },
 
   getArcCommanderPath: async e=>{

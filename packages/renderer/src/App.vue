@@ -404,8 +404,12 @@ onMounted(() => {
 
   window.ipc.invoke('ACS_debug').then(
     data => {
-      console.log(data);
-      console.log(JSON.parse(data));
+      for(let x of data){
+        try {
+          console.log(x);
+          console.log(JSON.parse(x));
+        } catch(e){}
+      }
     }
   );
   window.ipc.invoke('ACS_getArcCommanderPath').then(
