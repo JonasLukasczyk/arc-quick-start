@@ -173,7 +173,7 @@
                   :indeterminate='state_arc===-1'
                   size="1em"
                   :thickness="0.4"
-                  :color="state_arc===0?'red':'primary'"
+                  :color="state_arc===0?'red':state_arc>=0?'green':'primary'"
                   track-color="grey-3"
                   class="q-ma-md"
                   :value='state_arc>=0?100:0'
@@ -185,7 +185,7 @@
                   :indeterminate='state_assay===-1'
                   size="1em"
                   :thickness="0.4"
-                  :color="state_assay===0?'red':'primary'"
+                  :color="state_assay===0?'red':state_assay>=0?'green':'primary'"
                   track-color="grey-3"
                   class="q-ma-md"
                   :value='state_assay>=0?100:0'
@@ -197,7 +197,7 @@
                   :indeterminate='state_token===-1'
                   size="1em"
                   :thickness="0.4"
-                  :color="state_token===0?'red':'primary'"
+                  :color="state_token===0?'red':state_token>=0?'green':'primary'"
                   track-color="grey-3"
                   class="q-ma-md"
                   :value='state_token>=0?100:0'
@@ -209,7 +209,7 @@
                   :indeterminate='state_sync===-1'
                   size="1em"
                   :thickness="0.4"
-                  :color="state_sync===0?'red':'primary'"
+                  :color="state_sync===0?'red':state_sync>=0?'green':'primary'"
                   track-color="grey-3"
                   class="q-ma-md"
                   :value='state_sync>=0?100:0'
@@ -272,16 +272,14 @@ const createArc = ()=>{
     config_=>{
       config = config_;
 
-      state_page.value = 'PAGE_PROCESS_ARC';
+      advancePageState();
       state_arc.value = -2;
       state_assay.value = -2;
       state_token.value = -2;
       state_sync.value = -2;
 
       const queue = [];
-      if(config.user_gitlab){
-        queue.push([`-p ${config.arc_name} init -r https://git.nfdi4plants.org/${config.user_gitlab}/${config.arc_name}`, state_arc]);
-      }
+      queue.push([`-p ${config.arc_name} init ${config.user_gitlab ? `-r https://git.nfdi4plants.org/${config.user_gitlab}/${config.arc_name}`:''}`, state_arc]);
       queue.push([`-p ${config.arc_name} i create -i ${config.arc_name}`, state_arc]);
       queue.push([`-p ${config.arc_name} a init -a ${config.arc_name}`, state_assay]);
       if(config.user_name && config.user_eMail){
@@ -299,14 +297,13 @@ const createArc = ()=>{
 
 const processArcCommandQueue = queue=>{
   if(!queue.length){
-    state_page.value='PAGE_HELP';
+    setTimeout(advancePageState, 1000);
     return;
   }
 
   const command = queue.shift();
   if(command[1]!==null)
     command[1].value = -1;
-  console.log(command);
   window.ipc.invoke( 'ACS_runCommand', command[0] ).then(
     status=>{
       console.log(command,status);
@@ -368,20 +365,31 @@ const setUserNameAndEMail = () => {
 };
 
 const advancePageState = ()=>{
-  if(!config.arc_commander.exists && state_page.value!='PAGE_WELCOME'){
-    state_page.value='PAGE_WELCOME';
-  } else if(!config.user_gitlab && state_page.value!='PAGE_GITLAB' && state_page.value!='PAGE_USER') {
-    state_page.value='PAGE_GITLAB';
-  } else if(!config.user_name && state_page.value!='PAGE_USER') {
-    state_page.value='PAGE_USER';
-  } else {
-    state_page.value='PAGE_CREATE_ARC';
+  switch(state_page.value){
+    case 'PAGE_INITIAL':
+      if(!config.arc_commander.exists){
+        return state_page.value='PAGE_WELCOME';
+      }
+    case 'PAGE_WELCOME':
+      if(!config.user_gitlab) {
+        return state_page.value='PAGE_GITLAB';
+      }
+    case 'PAGE_GITLAB':
+      if(!config.user_name) {
+        return state_page.value='PAGE_USER';
+      }
+    case 'PAGE_USER':
+      return state_page.value='PAGE_CREATE_ARC';
+    case 'PAGE_CREATE_ARC':
+      return state_page.value='PAGE_PROCESS_ARC';
+    case 'PAGE_PROCESS_ARC':
+      return state_page.value='PAGE_HELP';
   }
+  console.error('Undefined State', state_page.value);
 }
 
 onMounted(() => {
   state_page.value='PAGE_INITIAL';
-  // state_page.value='PAGE_HELP';
 
   state_download.value = 0;
   state_arc.value = 0;
