@@ -34,21 +34,31 @@ export const ArcCommanderService = {
     // const temp = process.env['PORTABLE_EXECUTABLE_DIR'];
     // const temp2 = process.env['PORTABLE_EXECUTABLE_DIR']+'';
     // return app.getPath('exe');
+
+    const xxx = await ArcCommanderService.runCommandASync('pwd',{});
+
     return [
       JSON.stringify(process.env),
       app.getPath('exe'),
-      app.getAppPath()
+      app.getAppPath(),
+      xxx
     ];
   },
 
   getArcCommanderPath: async e=>{
-    // const root = PATH.resolve("./");
-    let root = process.env['PORTABLE_EXECUTABLE_DIR'];
-    if(!root){
-      root = process.env['PWD'];
-    }
-    if(!root){
-      root = app.getAppPath();
+
+    let platform = os.platform();
+    let root = null;
+    switch(platform){
+      case 'win32':
+        root = process.env['PORTABLE_EXECUTABLE_DIR'];
+        break;
+      case 'darwin':
+        root = app.getAppPath().split('arc-quick-start.app')[0];
+        break;
+      case 'linux':
+        root = process.env['PWD'];
+        break;
     }
     return root;
   },
