@@ -17,7 +17,7 @@ const config = {
     'packages/**/dist/**',
   ],
   extraMetadata: {
-    version: 'v0.0.2',
+    version: '0.0.2',
   },
   publish: ["github"],
   win: {
