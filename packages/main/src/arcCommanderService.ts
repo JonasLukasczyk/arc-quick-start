@@ -28,20 +28,10 @@ const config = {
 export const ArcCommanderService = {
 
   debug: async e=>{
-    // return process.env;
-    // return process.env.PORTABLE_EXECUTABLE_DIR;
-    // return JSON.stringify(process.env);
-    // const temp = process.env['PORTABLE_EXECUTABLE_DIR'];
-    // const temp2 = process.env['PORTABLE_EXECUTABLE_DIR']+'';
-    // return app.getPath('exe');
-
-    const xxx = await ArcCommanderService.runCommandASync('pwd',{});
-
     return [
       JSON.stringify(process.env),
       app.getPath('exe'),
-      app.getAppPath(),
-      xxx
+      app.getAppPath()
     ];
   },
 
@@ -60,6 +50,9 @@ export const ArcCommanderService = {
         root = process.env['PWD'];
         break;
     }
+    if(!root)
+      console.error('unable to determine app folder');
+
     return root;
   },
 

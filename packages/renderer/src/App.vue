@@ -224,8 +224,8 @@
               Congratulations!
             </div>
             <div class='message'>
-              You have just created your first ARC.
-              <!--TODO LINK TO ARC -->
+              You have just created your first ARC.<br>
+              <span v-if='user_gitlab && arc_name' class='link' @click='openExternalLink("https://git.nfdi4plants.org/{{user_gitlab}}/{{arc_name}}")'>https://git.nfdi4plants.org/{{user_gitlab}}/{{arc_name}}</span>
             </div>
             <div class='message'>
               Do not hesitate to start adding your data and metadata to FAIRify your research.
