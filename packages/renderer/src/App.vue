@@ -266,7 +266,7 @@
               <span v-if='gitlab_link' class='link' @click='openExternalLink_'>{{gitlab_link}}</span>
             </div>
             <div class='message' v-if='arc_mode===2'>
-              You have just synced ARC: {{arc_selected}}.
+              You have just synced ARC <span class='link'>{{arc_selected}}</span>.
             </div>
             <div class='message'>
               Do not hesitate to start adding your data and metadata to FAIRify your research.
