@@ -167,11 +167,12 @@
                 @submit="syncArcs"
                 class="q-gutter-md"
               >
+                <q-select filled v-model="arc_selected" :options="arcs" label="ARC"
+                  lazy-rules
+                  :rules="[ val => val && val.length > 0 || '']"
+                />
                 <q-btn label="Sync Existing" type="submit" color="primary"></q-btn>
               </q-form>
-              <ul>
-                <li v-for='arc of arcs' style='text-align:left'>{{arc[0]}}</li>
-              </ul>
             </div>
           </div>
 
@@ -236,23 +237,22 @@
           <!-- ############################################################# -->
           <div v-else-if="state_page==='PAGE_PROCESS_ARC_SYNC'">
             <div class='bold-message' style="margin-top:2em;">
-              Synchronizing ARCs...
+              Synchronizing ARC...
+            </div>
+            <br>
+            <div class="message tasklist">
+              <q-circular-progress
+                :indeterminate='arc_selected_state===-1'
+                size="1em"
+                :thickness="0.4"
+                :color="arc_selected_state===0?'red':arc_selected_state>=0?'green':'primary'"
+                track-color="grey-3"
+                class="q-ma-md"
+                :value='arc_selected_state>=0?100:0'
+              />
+              {{arc_selected}}
             </div>
 
-            <div style="display:inline-block;text-align:left;margin:1em auto;">
-              <div v-for="arc in arcs" class="message tasklist">
-                <q-circular-progress
-                  :indeterminate='arc[1].value===-1'
-                  size="1em"
-                  :thickness="0.4"
-                  :color="arc[1].value===0?'red':arc[1].value>=0?'green':'primary'"
-                  track-color="grey-3"
-                  class="q-ma-md"
-                  :value='arc[1].value>=0?100:0'
-                />
-                {{arc[0]}}
-              </div>
-            </div>
           </div>
 
           <!--############################################################# -->
@@ -260,9 +260,12 @@
             <div class='bold-message' style="margin:1em 0 -1em 0;">
               Congratulations!
             </div>
-            <div class='message'>
+            <div class='message' v-if='arc_mode===1'>
               You have just created your first ARC.<br>
               <span v-if='gitlab_link' class='link' @click='openExternalLink_'>{{gitlab_link}}</span>
+            </div>
+            <div class='message' v-if='arc_mode===2'>
+              You have just synced ARC: {{arc_selected}}.
             </div>
             <div class='message'>
               Do not hesitate to start adding your data and metadata to FAIRify your research.
@@ -302,6 +305,8 @@ const user_name = ref(null);
 const gitlab_link = ref(null);
 const arcs = ref([]);
 const arc_mode = ref(0);
+const arc_selected = ref(null);
+const arc_selected_state = ref(0);
 
 const state_arc = ref(0);
 const state_assay = ref(0);
@@ -341,21 +346,15 @@ const createArc = ()=>{
 
 const syncArcs = ()=>{
   arc_mode.value = 2;
+  arc_selected_state.value = -2;
 
   advancePageState();
 
+  console.log(arc_selected.value);
+
   const queue = [];
-
-  for(let arc of arcs.value){
-    arc[1].value = -2;
-    queue.push([`-p ${arc[0]} remote token get -s git.nfdi4plants.org`, arc[1]]);
-    break;
-  }
-
-  for(let arc of arcs.value){
-    arc[1].value = -2;
-    queue.push([`-p ${arc[0]} sync -f`, arc[1]]);
-  }
+  queue.push([`-p ${arc_selected.value} remote token get -s git.nfdi4plants.org`, arc_selected_state]);
+  queue.push([`-p ${arc_selected.value} sync -f`, arc_selected_state]);
 
   processArcCommandQueue(queue);
 };
@@ -473,8 +472,8 @@ onMounted(() => {
     config_=>{
       config = config_;
       latestReleaseLabel.value = config.arc_commander.filename;
-      for(let arc of config.arcs)
-        arcs.value.push( [arc,ref(0)] );
+      arcs.value = config.arcs;
+
       advancePageState();
     }
   );
