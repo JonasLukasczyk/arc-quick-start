@@ -23,6 +23,7 @@ const config = {
   user_gitlab:null,
   user_eMail:null,
   user_name:null,
+  arcs:null,
 };
 
 export const ArcCommanderService = {
@@ -92,6 +93,17 @@ export const ArcCommanderService = {
         config[key] = config__[key];
       }
     }
+
+    const arcs = [];
+    for(let dir of fs.readdirSync(path,{withFileTypes:true})){
+      if(dir.isDirectory()){
+        const path_ = PATH.join(PATH.join(path,dir.name), '.arc');
+        if(fs.existsSync(path_)){
+          arcs.push(dir.name);
+        }
+      }
+    }
+    config.arcs = arcs;
 
     let platform = os.platform();
     switch(platform){

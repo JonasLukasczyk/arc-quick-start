@@ -142,9 +142,8 @@
               Awesome!
             </div>
             <div class='message' style="margin-top:-1em;">
-              Now you can start creating your first ARC.
+              Now you can create your first ARC.
             </div>
-            <br>
             <q-form
               @submit="createArc"
               class="q-gutter-md"
@@ -158,17 +157,32 @@
               ></q-input>
               <q-btn label="Create" style="margin-top:-0.5em;" type="submit" color="primary"></q-btn>
             </q-form>
+
+            <div v-if='arcs.length' style="width:12em; margin:0 auto;">
+              <br>
+              <b>OR</b>
+              <br>
+              <br>
+              <q-form
+                @submit="syncArcs"
+                class="q-gutter-md"
+              >
+                <q-btn label="Sync Existing" type="submit" color="primary"></q-btn>
+              </q-form>
+              <ul>
+                <li v-for='arc of arcs' style='text-align:left'>{{arc[0]}}</li>
+              </ul>
+            </div>
           </div>
 
           <!-- ############################################################# -->
-          <div v-else-if="state_page==='PAGE_PROCESS_ARC'">
+          <div v-else-if="state_page==='PAGE_PROCESS_ARC_CREATE'">
             <div class='bold-message' style="margin-top:2em;">
               Creating ARC...
             </div>
 
-            <div style="text-align:right;margin:1em 5em 0 0;">
+            <div style="display:inline-block;text-align:left;margin:1em auto;">
               <div class="message tasklist">
-                Setting up the ARC
                 <q-circular-progress
                   :indeterminate='state_arc===-1'
                   size="1em"
@@ -178,9 +192,9 @@
                   class="q-ma-md"
                   :value='state_arc>=0?100:0'
                 />
+                Initializing the ARC
               </div>
               <div class="message tasklist">
-                Adding Assay
                 <q-circular-progress
                   :indeterminate='state_assay===-1'
                   size="1em"
@@ -190,9 +204,9 @@
                   class="q-ma-md"
                   :value='state_assay>=0?100:0'
                 />
+                Adding Assay
               </div>
               <div class="message tasklist">
-                Retrieving Access Token
                 <q-circular-progress
                   :indeterminate='state_token===-1'
                   size="1em"
@@ -202,9 +216,9 @@
                   class="q-ma-md"
                   :value='state_token>=0?100:0'
                 />
+                Retrieving Access Token
               </div>
               <div class="message tasklist">
-                Synchronizing ARC
                 <q-circular-progress
                   :indeterminate='state_sync===-1'
                   size="1em"
@@ -214,6 +228,29 @@
                   class="q-ma-md"
                   :value='state_sync>=0?100:0'
                 />
+                Synchronizing ARC
+              </div>
+            </div>
+          </div>
+
+          <!-- ############################################################# -->
+          <div v-else-if="state_page==='PAGE_PROCESS_ARC_SYNC'">
+            <div class='bold-message' style="margin-top:2em;">
+              Synchronizing ARCs...
+            </div>
+
+            <div style="display:inline-block;text-align:left;margin:1em auto;">
+              <div v-for="arc in arcs" class="message tasklist">
+                <q-circular-progress
+                  :indeterminate='arc[1].value===-1'
+                  size="1em"
+                  :thickness="0.4"
+                  :color="arc[1].value===0?'red':arc[1].value>=0?'green':'primary'"
+                  track-color="grey-3"
+                  class="q-ma-md"
+                  :value='arc[1].value>=0?100:0'
+                />
+                {{arc[0]}}
               </div>
             </div>
           </div>
@@ -225,7 +262,7 @@
             </div>
             <div class='message'>
               You have just created your first ARC.<br>
-              <span v-if='user_gitlab && arc_name' class='link' @click='openExternalLink("https://git.nfdi4plants.org/{{user_gitlab}}/{{arc_name}}")'>https://git.nfdi4plants.org/{{user_gitlab}}/{{arc_name}}</span>
+              <span v-if='gitlab_link' class='link' @click='openExternalLink_'>{{gitlab_link}}</span>
             </div>
             <div class='message'>
               Do not hesitate to start adding your data and metadata to FAIRify your research.
@@ -255,12 +292,16 @@ const state_page = ref('PAGE_INITIAL');
 
 const downloadProgress = ref(20);
 const latestReleaseLabel = ref('');
+
 let config = null;
 
 const arc_name = ref(null);
 const user_gitlab = ref(null);
 const user_eMail = ref(null);
 const user_name = ref(null);
+const gitlab_link = ref(null);
+const arcs = ref([]);
+const arc_mode = ref(0);
 
 const state_arc = ref(0);
 const state_assay = ref(0);
@@ -268,6 +309,7 @@ const state_token = ref(0);
 const state_sync = ref(0);
 
 const createArc = ()=>{
+  arc_mode.value = 1;
   window.ipc.invoke('ACS_setConfigEntries', {arc_name:arc_name.value}).then(
     config_=>{
       config = config_;
@@ -278,8 +320,10 @@ const createArc = ()=>{
       state_token.value = -2;
       state_sync.value = -2;
 
+      gitlab_link.value = config.user_gitlab ? `https://git.nfdi4plants.org/${config.user_gitlab}/${config.arc_name}` : null;
+
       const queue = [];
-      queue.push([`-p ${config.arc_name} init ${config.user_gitlab ? `-r https://git.nfdi4plants.org/${config.user_gitlab}/${config.arc_name}`:''}`, state_arc]);
+      queue.push([`-p ${config.arc_name} init ${gitlab_link.value ? `-r ${gitlab_link.value}`:''}`, state_arc]);
       queue.push([`-p ${config.arc_name} i create -i ${config.arc_name}`, state_arc]);
       queue.push([`-p ${config.arc_name} a init -a ${config.arc_name}`, state_assay]);
       if(config.user_name && config.user_eMail){
@@ -293,6 +337,27 @@ const createArc = ()=>{
       processArcCommandQueue(queue);
     }
   );
+};
+
+const syncArcs = ()=>{
+  arc_mode.value = 2;
+
+  advancePageState();
+
+  const queue = [];
+
+  for(let arc of arcs.value){
+    arc[1].value = -2;
+    queue.push([`-p ${arc[0]} remote token get -s git.nfdi4plants.org`, arc[1]]);
+    break;
+  }
+
+  for(let arc of arcs.value){
+    arc[1].value = -2;
+    queue.push([`-p ${arc[0]} sync -f`, arc[1]]);
+  }
+
+  processArcCommandQueue(queue);
 };
 
 const processArcCommandQueue = queue=>{
@@ -328,6 +393,12 @@ const runArcCommander = ()=>{
 
 const openExternalLink = url => {
   window.ipc.invoke('ACS_openExternalLink', url);
+};
+
+const openExternalLink_ = () => {
+  console.log(gitlab_link.value);
+  if(gitlab_link.value)
+    window.ipc.invoke('ACS_openExternalLink', gitlab_link.value);
 };
 
 const downloadArcCommander = ()=>{
@@ -381,8 +452,12 @@ const advancePageState = ()=>{
     case 'PAGE_USER':
       return state_page.value='PAGE_CREATE_ARC';
     case 'PAGE_CREATE_ARC':
-      return state_page.value='PAGE_PROCESS_ARC';
-    case 'PAGE_PROCESS_ARC':
+      if(arc_mode.value === 1)
+        return state_page.value='PAGE_PROCESS_ARC_CREATE';
+      else
+        return state_page.value='PAGE_PROCESS_ARC_SYNC';
+    case 'PAGE_PROCESS_ARC_CREATE':
+    case 'PAGE_PROCESS_ARC_SYNC':
       return state_page.value='PAGE_HELP';
   }
   console.error('Undefined State', state_page.value);
@@ -398,6 +473,8 @@ onMounted(() => {
     config_=>{
       config = config_;
       latestReleaseLabel.value = config.arc_commander.filename;
+      for(let arc of config.arcs)
+        arcs.value.push( [arc,ref(0)] );
       advancePageState();
     }
   );
