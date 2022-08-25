@@ -153,9 +153,9 @@
                 v-model="arc_name"
                 label="Name of the ARC"
                 lazy-rules
-                :rules="[ val => val && val.length > 0 || '']"
+                :rules="[ val => (val && val.length > 0 && checkString(val)) || 'Name can only consist of letters and numbers!']"
               ></q-input>
-              <q-btn label="Create" style="margin-top:-0.5em;" type="submit" color="primary"></q-btn>
+              <q-btn label="Create" style="margin-top:0.4em;" type="submit" color="primary"></q-btn>
             </q-form>
 
             <div v-if='arcs.length' style="width:12em; margin:0 auto;">
@@ -167,9 +167,10 @@
                 @submit="syncArcs"
                 class="q-gutter-md"
               >
-                <q-select filled v-model="arc_selected" :options="arcs" label="ARC"
+                <q-select options-dense filled v-model="arc_selected" :options="arcs" label="ARC"
                   lazy-rules
                   :rules="[ val => val && val.length > 0 || '']"
+                  hide-bottom-space
                 />
                 <q-btn label="Sync Existing" type="submit" color="primary"></q-btn>
               </q-form>
@@ -312,6 +313,17 @@ const state_arc = ref(0);
 const state_assay = ref(0);
 const state_token = ref(0);
 const state_sync = ref(0);
+
+const checkString = str =>{
+  let temp = str.toUpperCase();
+  const letters = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+  for(let letter of letters)
+    temp = temp.replaceAll(letter,'');
+  for(let i=0; i<=9; i++)
+    temp = temp.replaceAll(''+i,'');
+  temp = temp.replaceAll('-','');
+  return temp.length===0;
+};
 
 const createArc = ()=>{
   arc_mode.value = 1;
@@ -473,6 +485,8 @@ onMounted(() => {
       config = config_;
       latestReleaseLabel.value = config.arc_commander.filename;
       arcs.value = config.arcs;
+      if(arcs.value.length)
+        arc_selected.value = arcs.value[0];
 
       advancePageState();
     }
@@ -583,7 +597,7 @@ h2 {
 
 .message {
   font-size: 1.15em;
-  padding: 1em 0;
+  padding: 0.8em 0;
 }
 .tasklist {
   padding: 0;
