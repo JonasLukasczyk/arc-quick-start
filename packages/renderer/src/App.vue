@@ -233,6 +233,8 @@
                 Synchronizing ARC
               </div>
             </div>
+            <br>
+            <q-btn v-if='state_sync===0 || state_assay===0 || state_token===0 || state_sync===0' label="Restart" type="submit" color="primary" @click='resetApp()'></q-btn>
           </div>
 
           <!-- ############################################################# -->
@@ -252,6 +254,9 @@
                 :value='arc_selected_state>=0?100:0'
               />
               {{arc_selected}}
+
+              <br>
+              <q-btn v-if='state_arc===0' label="Restart" type="submit" color="primary" @click='resetApp()'></q-btn>
             </div>
 
           </div>
@@ -277,6 +282,7 @@
             <div class='message'>
               For further assistance, please consult our <span class='link' @click='openExternalLink("https://nfdi4plants.org/nfdi4plants.knowledgebase/index.html")'>knowledge base</span>, <span class='link' @click='openExternalLink("https://helpdesk.nfdi4plants.org")'>helpdesk</span>, or feel free to contact us directly at <span class='link' @click='openExternalLink("email:info@nfdi4plants.org")'>info@nfdi4plants.org</span>.
             </div>
+            <q-btn label="Restart" type="submit" color="primary" @click='resetApp()'></q-btn>
           </div>
         </transition>
       </div>
@@ -474,9 +480,8 @@ const advancePageState = ()=>{
   console.error('Undefined State', state_page.value);
 }
 
-onMounted(() => {
+const resetApp = ()=>{
   state_page.value='PAGE_INITIAL';
-
   state_download.value = 0;
   state_arc.value = 0;
 
@@ -507,6 +512,10 @@ onMounted(() => {
       console.log(data);
     }
   );
+}
+
+onMounted(() => {
+  resetApp();
 });
 
 </script>

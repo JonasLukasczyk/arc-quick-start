@@ -12,7 +12,7 @@ async function createWindow() {
       preload: join(__dirname, '../../preload/dist/index.cjs'),
     },
     width:500,
-    height:600,
+    height:700,
   });
 
   /**
